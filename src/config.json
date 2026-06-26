@@ -1,0 +1,12 @@
+{
+  "api_fields": {
+    "hourly": ["temperature_2m", "wind_speed_10m", "precipitation"]
+  },
+  "gold_aggregations": {
+    "temp_maxima": ["temperature_2m", "max"],
+    "temp_minima": ["temperature_2m", "min"],
+    "temp_media": ["temperature_2m", "mean"],
+    "vento_medio_kmh": ["wind_speed_10m", "mean"],
+    "chuva_total_mm": ["precipitation", "sum"]
+  }
+}

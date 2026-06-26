@@ -1,6 +1,5 @@
-version: '3'
 services:
-  # 1. Nosso Banco de Dados (onde ficarão as camadas Bronze e Silver)
+  # 1. Nosso Banco de Dados (Mantemos igualzinho, mas limpando o volume antigo para evitar conflitos)
   postgres_clima:
     image: postgres:15
     container_name: postgres_clima
@@ -9,22 +8,25 @@ services:
       - POSTGRES_PASSWORD=admin
       - POSTGRES_DB=clima_dw
     ports:
-      - "5434:5432" # Porta 5434 para não conflitar com outros projetos
+      - "5434:5432"
     volumes:
       - postgres_clima_data:/var/lib/postgresql/data
 
-  # 2. O Airflow (O Maestro que vai rodar nossos scripts)
+  # 2. O Novo Airflow (Imagem oficial, moderna e muito mais robusta)
   airflow:
-    image: puckel/docker-airflow:1.10.9
+    image: apache/airflow:2.7.1-python3.10
     container_name: apache_airflow
     restart: always
+    command: standalone # Modo simplificado oficial, excelente para estudos
     volumes:
-      - ./dags:/usr/local/airflow/dags # Pasta onde ficarão nossas automações
+      - ./dags:/opt/airflow/dags # Caminho para o script DAG
+      - ./src:/opt/airflow/src # Caminho para os scripts de execução
     environment:
-      - LOAD_EX=n # Não carregar exemplos pesados do Airflow
-      - EXECUTOR=SequentialExecutor
+      - AIRFLOW__CORE__LOAD_EXAMPLES=False
+      # 🔥 Instala as bibliotecas automaticamente ao subir o contêiner:
+      - _PIP_ADDITIONAL_REQUIREMENTS=pandas sqlalchemy psycopg2-binary requests google-generativeai pendulum
     ports:
-      - "8080:8080" # Porta para o painel do Airflow no navegador
+      - "8080:8080"
     depends_on:
       - postgres_clima
 
