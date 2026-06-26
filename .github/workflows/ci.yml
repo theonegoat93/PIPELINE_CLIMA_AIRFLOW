@@ -1,27 +1,31 @@
-name: CI Pipeline
+name: CI Pipeline Seguro
 
 on:
   push:
     branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
 
 jobs:
-  check-syntax:
+  security-and-quality:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout do Código
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
       - name: Configurar Python
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      - name: Instalar dependências
-        run: pip install pandas sqlalchemy requests pendulum
+      - name: Instalar dependências de análise
+        run: pip install bandit safety
 
-      - name: Validar sintaxe dos scripts
+      - name: SAST - Analisar código com Bandit
+        # -r: recursivo, -ll: reporta apenas problemas de média/alta severidade
+        run: bandit -r src/ dags/ -ll
+
+      - name: SCA - Verificar vulnerabilidades nas dependências
+        run: safety check -r requirements.txt
+
+      - name: Validar sintaxe
         run: |
           python -m py_compile src/*.py
           python -m py_compile dags/*.py
