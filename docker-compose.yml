@@ -1,3 +1,4 @@
+
 services:
   # 1. Nosso Banco de Dados (Mantemos igualzinho, mas limpando o volume antigo para evitar conflitos)
   postgres_clima:
