@@ -16,14 +16,15 @@ jobs:
           python-version: '3.10'
 
       - name: Instalar dependências de análise
-        run: pip install bandit safety
+        # Instalamos uma versão anterior à mudança de política (pré-2.0)
+        run: pip install bandit "safety<2.0.0"
 
       - name: SAST - Analisar código com Bandit
         # -r: recursivo, -ll: reporta apenas problemas de média/alta severidade
         run: bandit -r src/ dags/ -ll
 
       - name: SCA - Verificar vulnerabilidades nas dependências
-        run: safety scan -r requirements.txt --disable-optional-telemetry
+        run: safety check -r requirements.txt
 
       - name: Validar sintaxe
         run: |
