@@ -23,7 +23,7 @@ jobs:
         run: bandit -r src/ dags/ -ll
 
       - name: SCA - Verificar vulnerabilidades nas dependências
-        run: safety check -r requirements.txt
+        safety scan -r requirements.txt
 
       - name: Validar sintaxe
         run: |
