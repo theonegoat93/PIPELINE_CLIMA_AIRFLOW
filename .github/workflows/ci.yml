@@ -2,7 +2,7 @@ name: CI Pipeline Seguro
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   security-and-quality:
