@@ -1,6 +1,5 @@
-
 services:
-  # 1. Nosso Banco de Dados (Mantemos igualzinho, mas limpando o volume antigo para evitar conflitos)
+  # 1. Nosso Banco de Dados
   postgres_clima:
     image: postgres:15
     container_name: postgres_clima
@@ -13,18 +12,20 @@ services:
     volumes:
       - postgres_clima_data:/var/lib/postgresql/data
 
-  # 2. O Novo Airflow (Imagem oficial, moderna e muito mais robusta)
+  # 2. O Novo Airflow
   airflow:
     image: apache/airflow:2.7.1-python3.10
     container_name: apache_airflow
     restart: always
-    command: standalone # Modo simplificado oficial, excelente para estudos
+    command: standalone
     volumes:
-      - ./dags:/opt/airflow/dags # Caminho para o script DAG
-      - ./src:/opt/airflow/src # Caminho para os scripts de execução
+      - ./dags:/opt/airflow/dags
+      - ./src:/opt/airflow/src
+    env_file:
+      - .env  # 🔥 ADICIONADO: Agora o Airflow lê suas chaves do arquivo .env
     environment:
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      # 🔥 Instala as bibliotecas automaticamente ao subir o contêiner:
+      # Instala as bibliotecas automaticamente ao subir o contêiner:
       - _PIP_ADDITIONAL_REQUIREMENTS=pandas sqlalchemy psycopg2-binary requests google-generativeai pendulum
     ports:
       - "8080:8080"
