@@ -16,7 +16,7 @@ jobs:
           python-version: '3.10'
 
       - name: Instalar dependências de análise
-        # Instalamos uma versão anterior à mudança de política (pré-2.0)
+        # Instalamos uma versão anterior à mudança de política (pré-2.0) isso aí
         run: pip install bandit "safety<2.0.0"
 
       - name: SAST - Analisar código com Bandit
