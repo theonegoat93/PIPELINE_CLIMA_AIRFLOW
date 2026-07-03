@@ -72,12 +72,12 @@ def notificar_fim_com_gemini(**context):
         payload = {"contents": [{"parts": [{"text": prompt}]}]}
         
         print(f"Enviando prompt para o Gemini: {prompt}")
-        res_g = requests.post(url_g, json=payload)
+        res_g = requests.post(url_g, json=payload, timeout=10)
         
         if res_g.status_code == 200:
             texto_ia = res_g.json()['candidates'][0]['content']['parts'][0]['text']
             print(f"Resposta recebida: {texto_ia}")
-            requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/sendMessage", json={"chat_id": CHAT_ID, "text": texto_ia, "parse_mode": "Markdown"})
+            requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/sendMessage", json={"chat_id": CHAT_ID, "text": texto_ia, "parse_mode": "Markdown"}, timeout=10)
         else:
             print(f"Erro na API do Gemini! Status: {res_g.status_code}, Resposta: {res_g.text}")
             raise Exception(f"Erro {res_g.status_code}")
