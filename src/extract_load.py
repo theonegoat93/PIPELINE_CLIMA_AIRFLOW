@@ -15,7 +15,7 @@ campos = ",".join(config['api_fields']['hourly'])
 url = f"https://api.open-meteo.com/v1/forecast?latitude=-23.1853&longitude=-46.8892&hourly={campos}&timezone=America/Sao_Paulo&forecast_days=1"
 
 print(f"Buscando dados da API Open-Meteo com os campos: {campos}...")
-response = requests.get(url)
+response = requests.get(url, timeout=10)
 dados_api = response.json()
 
 data_hoje = datetime.datetime.now().strftime('%Y-%m-%d')
@@ -30,8 +30,11 @@ engine = create_engine('postgresql://admin:admin@postgres_clima:5432/clima_dw')
 
 # Verificamos se já existe registro para a data de hoje para evitar duplicatas acidentais
 try:
-    query_check = f"SELECT data_coleta FROM bronze_clima_jundiai WHERE data_coleta = '{data_hoje}'"
-    df_existente = pd.read_sql(query_check, con=engine)
+    
+    #query_check = f"SELECT data_coleta FROM bronze_clima_jundiai WHERE data_coleta = '{data_hoje}'"
+    query_check = "SELECT data_coleta FROM bronze_clima_jundiai WHERE data_coleta = :data"
+    #df_existente = pd.read_sql(query_check, con=engine)
+    df_existente = pd.read_sql(query_check, con=engine, params={"data": data_hoje})
 except:
     df_existente = pd.DataFrame()
 

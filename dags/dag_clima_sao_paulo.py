@@ -19,7 +19,7 @@ def retornar_data_formatada(context):
 
 def inicia_bronze(**context):
     msg = f"🌀 *Apache Airflow | Pipelines*\n\n🚀 *DAG:* `pipeline_clima_jundiai`\n📅 *Executado em:* {retornar_data_formatada(context)} BRT\n\n*Tasks:*\n▶️ `1) Bronze` • Extraindo...\n⬜ `2) Silver` • Aguardando...\n⬜ `3) Gold` • Aguardando..."
-    resp = requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/sendMessage", json={"chat_id": CHAT_ID, "text": msg, "parse_mode": "Markdown"}).json()
+    resp = requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/sendMessage", json={"chat_id": CHAT_ID, "text": msg, "parse_mode": "Markdown"}, timeout=10).json()
     context['task_instance'].xcom_push(key='telegram_message_id', value=resp['result']['message_id'])
 
 def atualizar_telegram(status, **context):
@@ -31,7 +31,7 @@ def atualizar_telegram(status, **context):
     elif status == 'gold_start':
         msg = f"🌀 *Apache Airflow | Pipelines*\n\n🚀 *DAG:* `pipeline_clima_jundiai`\n📅 *Executado em:* {data} BRT\n\n*Tasks:*\n✅ `1) Bronze` • Sucesso!\n✅ `2) Silver` • Sucesso!\n▶️ `3) Gold` • Gerando indicadores..."
     
-    requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/editMessageText", json={"chat_id": CHAT_ID, "message_id": msg_id, "text": msg, "parse_mode": "Markdown"})
+    requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/editMessageText", json={"chat_id": CHAT_ID, "message_id": msg_id, "text": msg, "parse_mode": "Markdown"}, timeout=10)
 
 # 🏆 A GRANDE FUNÇÃO FINAL
 def notificar_fim_com_gemini(**context):
@@ -40,7 +40,7 @@ def notificar_fim_com_gemini(**context):
     msg_id = context['task_instance'].xcom_pull(task_ids='notificar_bronze', key='telegram_message_id')
     data_brt = retornar_data_formatada(context)
     msg_sucesso = f"🌀 *Apache Airflow | Pipelines*\n\n🚀 *DAG:* `pipeline_clima_jundiai`\n📅 *Executado em:* {data_brt} BRT\n\n*Tasks:*\n✅ `1) Bronze` • Sucesso!\n✅ `2) Silver` • Sucesso!\n✅ `3) Gold` • Sucesso!\n\n✨ *Pipeline concluído com sucesso!* 🏁"
-    requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/editMessageText", json={"chat_id": CHAT_ID, "message_id": msg_id, "text": msg_sucesso, "parse_mode": "Markdown"})
+    requests.post(f"https://api.telegram.org/bot{TOKEN_BOT}/editMessageText", json={"chat_id": CHAT_ID, "message_id": msg_id, "text": msg_sucesso, "parse_mode": "Markdown"}, timeout=10)
     print("Checklist atualizado no Telegram.")
 
     # 2. Segundo: Busca dados para a IA
