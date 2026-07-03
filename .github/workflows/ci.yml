@@ -2,7 +2,7 @@ name: CI Pipeline Seguro
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "dev" ]
 
 jobs:
   security-and-quality:
@@ -16,7 +16,8 @@ jobs:
           python-version: '3.10'
 
       - name: Instalar dependências de análise
-        run: pip install bandit safety
+        # Instalamos uma versão anterior à mudança de política (pré-2.0) isso aí
+        run: pip install bandit "safety<2.0.0"
 
       - name: SAST - Analisar código com Bandit
         # -r: recursivo, -ll: reporta apenas problemas de média/alta severidade
